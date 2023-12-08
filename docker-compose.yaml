@@ -1,0 +1,34 @@
+version: "3.8"
+
+services:
+  mongoserver1:
+    container_name: mongoserver1
+    image: mongo:latest
+    ports: 
+      - 27017:27017
+    volumes:
+     - mongo-data:/data/db
+    networks: 
+      - go-network
+  crud-golang: 
+    container_name: crud-golang
+    image: shofwa123/app-golang:1.2
+    ports:
+      - 8000:8000
+    depends_on:
+      - mongoserver1
+    environment:
+      - APP_NAME=Belajar Docker
+      - DB_HOST=mongoserver1
+      - DB_PORT=27017
+      - DB_NAME=goTest
+    networks: 
+      - go-network
+
+volumes:
+  mongo-data:
+
+networks:
+  go-network:
+    name: go-network
+
