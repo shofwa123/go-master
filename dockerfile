@@ -18,4 +18,5 @@ RUN go mod download
 COPY *.go ./
 COPY go.env ./
 
+
 CMD ["go", "run", "./."]
