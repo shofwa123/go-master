@@ -99,7 +99,7 @@ spec:
   - host: rbac.k8s-dev.jalaniagaelok.web.id
     http:
       paths:
-      - path: /
+      - path: /golang
         pathType: Prefix
         backend:
           service: 
