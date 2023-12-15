@@ -96,7 +96,7 @@ metadata:
 spec:
   ingressClassName: crud-golang
   rules:
-  - host: golang.k8s-dev.jalaniagaelok.web.id
+  - host: rbac.k8s-dev.jalaniagaelok.web.id
     http:
       paths:
       - path: /
