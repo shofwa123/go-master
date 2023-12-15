@@ -63,7 +63,7 @@ spec:
           mountPath: /data/db
   volumeClaimTemplates:
   - metadata:
-    name: mongo-persistent-storage
+      name: mongo-persistent-storage
     spec:
       accessModes: [ "ReadWriteOnce" ]
       resources:
