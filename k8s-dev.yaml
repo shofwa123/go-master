@@ -1,0 +1,104 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: crud-golang
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: crud-golang
+  template:
+    metadata:
+      labels:
+        app: crud-golang
+    spec:
+      containers:
+      - name: crud-golang
+        image: docker-registry.jalaniagaelok.web.id/shofwa123/app-golang:1.1
+        ports:
+        - containerPort: 8080
+      imagePullSecrets:
+      - name: registry-1
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: crud-golang-service
+spec:
+  selector:
+    app: crud-golang
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+  type: LoadBalancer
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongoserver1
+spec:
+  serviceName: "mongoserver1"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongoserver1
+  template:
+    metadata:
+      labels:
+        app: mongoserver1
+    spec:
+      containers:
+      - name: mongoserver1
+        image: mongo:latest
+        ports:
+        - containerPort: 27017
+      volumeMounts:
+      - name: mongo-persistent-storage
+        mountPath: /data/db
+        volumeClaimTemplates:
+      - metadata:
+        name: mongo-persistent-storage
+        spec:
+          accessModes: [ "ReadWriteOnce" ]
+          resources:
+            requests:
+              storage: 1Gi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongoserver1-service
+spec:
+  selector:
+    app: mongoserver1
+  ports:
+    - protocol: TCP
+      port: 27017
+      targetPort: 27017
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: crud-golang-ingress
+  namespace: k8s-crud-golang
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    ingress.kubernetes.io/ingress.allow-http: "false"
+spec:
+  ingressClassName: crud-golang
+  rules:
+  - host: golang.k8s-dev.jalaniagaelok.web.id
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service: 
+            name: crud-golang-service
+            port:
+              number: 80
